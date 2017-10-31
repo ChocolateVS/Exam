@@ -1,13 +1,10 @@
-body {
-    background-color:black;
-}
 h1 {
-	color:white;
+	color:ffa500;
 	text-align:center;
 }
 
 h2 {
-	color:white;
+	color:ffa500;
 	text-align:center;
 }
 #refresh {
@@ -20,15 +17,15 @@ h2 {
 	position:absolute; left:47%;
 }
 #subjectdisplay {
-	color:white;
+	color:ffa500;
 	position:absolute; top:30%; left:45%;
 }
 #subjectdisplaymath {
-	color:white;
+	color:ffa500;
 	position:absolute; top:33%; left:45%;
 }
 #timedisplay {
-    color:white;
+    color:ffa500;
 	position:absolute; top:36%; left:45%;
 } 
 h3 {
