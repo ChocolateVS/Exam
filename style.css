@@ -35,3 +35,7 @@ h3 {
 	font-size:140%;
 	text-align:center;
 }
+ul {
+	position:absolute; top:42%; left:44%;
+}
+
