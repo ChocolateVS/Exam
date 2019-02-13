@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Complexity and Tractability</title>
+</head>
+<body>
+	<header>
+		<center>
+			<div id="welcome">
+				<h1>Welcome to the Travelling Salesman problem</h1>
+				<h2>Try to find the smallest possible route which passes through<br>
+					each point once and returns to the starting point
+					<br>
+					<br>
+					Start at the green point, click and drag to create lines between each point</h2>
+					<h2>Please select a number of points or click GO for a random number of points</h2>
+					<input class="input" id="dots" type="number" min="1" max="15" placeholder="Random">
+					<input class="button" id="start" value="  GO  " type="button" onClick="start()">
+					<h3>Right Click and select save image as to save a png of your dots</h3>
+					<h3>Please do not resize the page or stuff wont be happy with you!</h3>
+					
+			</div></center>
+		</header>	
+    <div class="wrapper" id="canvases">
+		<canvas id="game1" width="100px" height="100px" style="border:1px solid white"></canvas>
+		<canvas id="lineCanvas" style="border:1px solid white"></canvas>
+    </div> 
+		<div id="tools">
+			<input class="button" id="save" value="Save" type="button" onClick="save()">
+			<input class="button" id="loadp" value="Load" type="button" onClick="load()">
+			<input class="button" id="undo" value="Undo" type="button" onClick="undo()">
+			<input class="button" id="reload" value="Reload" type="button" onClick="reload()">
+			<input class="button" id="restart" value="Restart" type="button" onClick="restart()">
+			<input class="button" id="timer" value="Start" type="button" onClick="timer()">
+			<input class="button" id="export" value="Export-PNG" type="button" onClick="exportAsPng()">
+			<span id="clock"></span><br>
+			<p>Number of Points: </p><p id="numberofpoints"></p>
+		</div>
+		<center><div id="calculator">
+				<h1>TIME CALCULATOR</h2>
+				<h2>This Calculator will tell you how long it will take for a computer to solve this puzzle</h3>
+				<h2>The Equation for the calculation is equal to N Factorial</h2> 
+				<h2>This is because the number of operations is equal to the factorial of the number of points</h2>
+				<div class="container"><form>
+					Number of points:       <input class="input" id="pointsN" type="number" min="0" max="100" value="15"><br>
+					Processing Speed (GHZ): <input class="input" id="speed" type="number" value="3" min="0" max="6"><br>
+					No. of processors:      <input class="input" id="processors" type="number" value="1"><br></div>
+					<select id="units" name="select_units">
+						<option value="" selected="" class="option">Select a unit</option>
+						<option value='seconds' class="option">Seconds</option>
+						<option value='minutes' class="option">Minutes</option>
+						<option value='hours' class="option">Hours</option>
+						<option value='days' class="option">Days</option>
+						<option value='months' class="option">Months</option>
+						<option value='years' class="option">Years</option>
+						<option value='centuries' class="option">Centuries</option>
+					</select>
+					<input class="button" type="button" onclick="solveTime()" value="Submit">
+				</form><br>
+				<p>A Computer with these specs would take: </p><p id="time">-</p> <p id="unit"> Seconds</p> <p>to solve this</p>
+		</center>
+		</div>
+		</div>
+		<script>
+			//Variables
+			var canvas = document.querySelector('#game1'); //Canvas
+			var lineCanvas = document.querySelector("#lineCanvas");
+			var c = canvas.getContext('2d'); //Variable for drwaing to canvas
+			var cLine = lineCanvas.getContext('2d');
+			var mouse = { //Mouse x,y coordinates
+				x: undefined,
+				y: undefined
+			}
+			class Line {
+				constructor(lineStartX, lineStartY) {
+					this.lineStartX = lineStartX;
+					this.lineStartY = lineStartY;
+					this.lineEndX = lineStartX;
+					this.lineEndY = lineStartY;
+				}
+			}
+			var StartX = 0;
+			var StartY = 0;
+			var lines = [];
+			var circleArray = [];
+			var distanceL = 0; //Current Line Distance
+			var total = 0; //Total Distance
+			var dragging = false,
+				dragStartLocation, snapshot; //Mouse Draw/Line Drawing
+			var h = 0; //Timer - Hours
+			var m = 0; //Timer - Minutes
+			var s = 0; //Timer - Seconds
+			var position = 0;
+			//Elements
+			document.getElementById("canvases").style.display = "none";
+			document.getElementById("tools").style.display = "none";
+			//Event Listeners
+			window.addEventListener('mousemove', function(event) {
+				mouse.x = event.x;
+				mouse.y = event.y;
+			});
+			window.addEventListener('resize', function() {
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				lineCanvas.width = window.innerWidth;
+				lineCanvas.height = window.innerHeight;
+
+				console.log(innerWidth);
+				console.log(innerHeight);
+				//start();
+			});
+
+			function start() { //Start
+				document.getElementById("welcome").style.display = "none";//Make Elements visible and invisible
+				document.getElementById("tools").style.display = "block";
+				document.getElementById("calculator").style.display = "none";
+				document.getElementById("canvases").style.display = "block";
+				//Set Canvas to full width
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				lineCanvas.width = window.innerWidth;
+				lineCanvas.height = window.innerHeight;
+				animate();
+				drawStart();
+				init();
+			}
+
+			function animate() { //Animation
+				c.clearRect(0, 0, innerWidth, innerHeight);
+				var rice_value = document.getElementById("dots").value;
+				if (rice_value == '') {
+					var rice = Math.floor(Math.random() * 20) + 1;
+				} else {
+					var rice = document.getElementById("dots").value;
+				}
+				document.getElementById("numberofpoints").innerHTML = rice;
+				drawPoints(rice);
+			}
+
+			function draw_text() { //Drawing Current Distance
+				c.clearRect(100, 40, 250, 60);
+				c.font = "20px Comic Sans MS";
+				c.font = "20px Comic Sans MS";
+				c.fillStyle = "Purple";
+				c.textAlign = "left";
+				c.fillText("Current Line Length:", 100, 80);
+				c.fillText(distanceL, 300, 80);
+			}
+
+			function draw_total(total) { //Total Distance
+				c.fillStyle = "Purple";
+				c.textAlign = "left";
+				c.fillText("Total Distance:", 100, 60);
+				c.fillText(total, 250, 60);
+			}
+
+			function Circle(x, y, width, height, radius, color) { //Draw Points
+				this.x = x;
+				this.y = y;
+				this.width = width;
+				this.height = height;
+				this.radius = radius;
+				this.color = color;
+			}
+
+			function drawStart() { //Draw Start Circle
+				var base_radius = 15;
+				if (StartY == 0 && StartX == 0) {
+					StartX = Math.random() * (innerWidth - base_radius * 2) + base_radius;
+					StartY = Math.random() * (innerHeight - base_radius * 2) + base_radius;
+				}
+				c.beginPath();
+				c.arc(StartX, StartY, base_radius, 0, Math.PI * 2, false);
+				c.strokeStyle = "#39e600";
+				c.fillStyle = "#39e600";
+				c.fill();
+				c.closePath();
+				c.stroke();
+			}
+
+			function getCanvasCoordintes(event) { //Get Mouse Coordinates on canvas
+				var x = event.clientX - canvas.getBoundingClientRect().left,
+					y = event.clientY - canvas.getBoundingClientRect().top;
+				return {
+					x: x,
+					y: y
+				}
+			}
+
+			function init() { // Mouse Event Listeners
+				cLine.strokeStyle = 'yellow';
+				cLine.lineWidth = 6;
+				cLine.lineCap = 'round';
+				document.addEventListener("mousedown", dragStart, false);
+				document.addEventListener("mousemove", drag, false);
+				document.addEventListener("mouseup", dragStop, false);
+			}
+
+			function drawPoints(rice) { //Push Values to Circle Function
+	      if (circleArray === undefined || circleArray.length == 0) {
+          for (var i = 0; i < rice; i++) {
+            var width = 20;
+            var height = 20;
+            var radius = 10;
+            var color = 'black';
+            var x = Math.floor(Math.random() * (innerWidth - radius * 2) + radius);
+            var y = Math.floor(Math.random(Math.floor) * (innerHeight - radius * 2) + radius);
+            circleArray.push(new Circle(x, y, width, height, radius, color));
+          }
+        }
+		    circleArray.forEach((item, index, array) => {
+          c.beginPath();
+					c.arc(item.x, item.y, item.radius, 0, Math.PI * 2, false);
+					c.fillStyle = item.color;
+					c.fill();
+					c.closePath();
+					c.stroke();
+        });
+        
+			}
+
+			function drawLines() { //Line Drawing
+				cLine.clearRect(0, 0, lineCanvas.width, lineCanvas.height);
+				lines.forEach((item, index, array) => {
+					cLine.beginPath();
+					cLine.moveTo(item.lineStartX, item.lineStartY);
+					cLine.lineTo(item.endX, item.endY);
+					cLine.stroke();
+					cLine.closePath();
+				});
+				var distanceX = dragStartLocation.x - position.x;
+				var distanceY = dragStartLocation.y - position.y;
+				console.log("Distance X: ",distanceX, "Distance Y", distanceY )
+				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2)));
+				console.log(distanceL);
+				draw_text();
+			}
+
+			function dragStart(event) { //When Mouse Click
+				dragging = true;
+				dragStartLocation = getCanvasCoordintes(event);
+				lines.push(new Line(getCanvasCoordintes(event).x, getCanvasCoordintes(event).y));
+			}
+
+			function drag(event) { //When Mouse Drag
+				if (dragging == true) {
+					position = getCanvasCoordintes(event);
+					lines[lines.length - 1].endX = position.x;
+					lines[lines.length - 1].endY = position.y;
+					drawLines();
+				}
+			}
+			function dragStop(event) { //When Mouse Release
+				dragging = false;
+				position = getCanvasCoordintes(event);
+				drawLines(position);
+				total = distanceL + total;
+				draw_total(total);
+			}
+			function restart() { //Refresh Canvas
+	      circleArray = [];
+				lines = [];
+        StartX = 0;
+        StartY = 0;
+				start();
+				total = 0;
+			}
+
+			function reload() { //Remove all the lines
+				lines = [];
+				total = 0;
+		    cLine.clearRect(0, 0, lineCanvas.width, lineCanvas.height);
+			}
+			function undo() { //Remove Previous lines
+				var distanceX = dragStartLocation.x - position.x;
+				var distanceY = dragStartLocation.y - position.y;
+				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2)))
+				total = total - distanceL
+				lines.splice(-1, 1);
+				distanceX = dragStartLocation.x - position.x;
+				distanceY = dragStartLocation.y - position.y;
+				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2)))
+				total = total - distanceL;
+				lines.splice(-1, 1);
+				drawLines();
+			}
+			function save() { //Save Canvas/Dot Locations
+				let jsoncode = {
+					"STARTX": StartX, "STARTY": StartY, "CIRCUS": circleArray
+				}
+				jsoncode = JSON.stringify(jsoncode);
+				let whocares = prompt("Please copy this code: ", jsoncode);
+			}
+			function load() { //Load Preivous Canvas
+				
+				let jsoncode = prompt("Please paste in your code: ");
+				jsoncode = JSON.parse(jsoncode);
+				StartX = jsoncode["STARTX"];
+				StartY = jsoncode["STARTY"];
+				circleArray = jsoncode["CIRCUS"];
+				lines = [];
+				start();
+			}
+			function timer() { //Timer
+				switch (document.getElementById('timer').value) {
+					case 'Stop':
+						window.clearInterval(tm); // stop the timer 
+						document.getElementById('timer').value = 'Start';
+						break;
+					case 'Start':
+						tm = window.setInterval('disp()', 1000);
+						document.getElementById('timer').value = 'Stop';
+						break;
+				}
+			}
+			function disp() { //Timer
+				// Format the output by adding 0 if it is single digit //
+				if (s < 10) {var s1 = '0' + s;} 
+				else {var s1 = s;}
+				if (m < 10) {var m1 = '0' + m;} 
+				else {var m1 = m;}
+				if (h < 10) {var h1 = '0' + h;} 
+				else {var h1 = h;}
+				// Display the output //
+				str = h1 + ':' + m1 + ':' + s1;
+				document.getElementById('clock').innerHTML = str;
+				// Calculate the stop watch // 
+				if (s < 59) {s = s + 1;} 
+				else {s = 0; m = m + 1;
+					if (m == 60) {
+						m = 0; h = h + 1;
+					}
+				}
+			}
+
+			function solveTime() { //How long will it take a robot
+				var num = document.getElementById("pointsN").value;
+				var speed = document.getElementById("speed").value;
+				var processors = document.getElementById("processors").value;
+				var unit = document.getElementById("units").value;
+				var result = factorialize(num);
+				var unitM = findUnitM(unit);
+				var process = (speed * 1000000000) / 10;
+				var pps = processors * process;
+				var time = Math.floor(((result / process) / unitM));
+				console.log("UnitM", unitM)
+				console.log("A Computer Would Take ", time, unit, " To Solve This");
+				document.getElementById("time").innerHTML = time;
+				document.getElementById("unit").innerHTML = unit;
+			}
+
+			function factorialize(num) { //Factorial for Calculator
+				var result = num;
+				if (num === 0 || num === 1)
+					return 1;
+				while (num > 1) {
+					num--;
+					result *= num;
+				}
+				console.log(result);
+				return result;
+			}
+
+			function findUnitM(unit) { //Unit Select
+				if (unit == 'seconds') {return (1);}
+				if (unit == 'minutes') {return (60);}
+				if (unit == 'hours') {return (3600);}
+				if (unit == 'days') {return (86400);}
+				if (unit == 'months') {return (2600000);}
+				if (unit == 'years') {return (31104000);}
+				if (unit == 'centuries') {return (3110400000);} 
+				else {return (1)}
+			}
+			
+			function exportAsPng() {
+				var c=document.getElementById("game1");
+				var d=c.toDataURL("image/png");
+				var w=window.open('about:blank','image from canvas');
+				w.document.write("<img src='"+d+"' alt='from canvas'/>");
+			}	
+		</script>
+		<style>
+		html {
+			height:100%;
+		}
+		body {
+			background-color:black;
+			font-family:Arial;
+			background-image: linear-gradient(to top, #00e5ff, #009dff);
+			background-repeat:no-repeat;
+			background-position:center;
+			background-size:cover;
+			color:white;
+			margin:0;
+			padding-botton:100px;
+		}
+		p {
+			font-size:20px;
+			display:inline;
+		}
+		ul {
+			color:white;
+			text-align:left;
+		}
+		#nextSteps {
+			text-align:left;
+		}
+    
+		canvas {
+		  position: absolute;
+      top: 0; 
+      left: 0;
+		}
+    
+		.button {
+			color:white;
+			width:100px;
+			height:34px;
+			font: 12px Helvetica, sans-serif;
+			background-image: linear-gradient(to top, #000404, #8a98a0);
+			border:1px solid black;
+		}
+		
+		.button:hover {
+			background-image: linear-gradient(to top, #8a98a0, #000404);
+			transform:scale(1.05);
+			transition-duration: 2s;
+		}
+		.input {
+			width:150px;
+			height:30px;
+			background-image: linear-gradient(to top, #000404, #8a98a0);
+			border:1px solid black;
+			color:white;
+			margin-bottom:10px;
+		}
+		
+		#units {
+			color:white;
+			background-image: linear-gradient(to top, #000404, #8a98a0);
+			border:1px solid black;
+			width:auto;
+			height:34px;
+		}
+		.option {
+			color:black;
+		}
+		form {
+			text-align:center;
+		}
+		.container {
+		    width: 150px;
+		    clear: both;
+		}
+		.container input {
+			display:inline;
+		    width: 100%;
+		    clear: both;
+		}
+		
+		#calculator {
+			background-image: linear-gradient(to top, #00e5ff, #009dff);
+			border:1px solid white;
+		}
+	  .wrapper { 
+      position: relative; 
+      height:100%;
+      width:100%;
+    }
+    #tools {
+      position:absolute;
+      bottom:0;
+      left:0;
+    }
+		</style>
+	</body>
+</html>
