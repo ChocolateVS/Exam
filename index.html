@@ -14,8 +14,9 @@
 					Start at the green point, click and drag to create lines between each point</h2>
 					<h2>Please select a number of points or click GO for a random number of points</h2>
 					<input class="input" id="dots" type="number" min="1" max="15" placeholder="Random">
-					<input class="button" id="start" value="  GO  " type="button" onClick="start()">
-					<input type="checkbox" id="randomColor"><p> Random line color </p>
+					<input class="button" id="start" value="  GO  " type="button" onClick="start()"><br>
+					<input type="checkbox" id="randomLineColor"><p> Random Line color </p><br>
+					<input type="checkbox" id="randomDotColor"><p> Random Dot color </p>
 			</div></center>
 		</header>	
 		<div class="wrapper" id="canvases">
@@ -163,7 +164,7 @@
 				return {x: x, y: y} //Returns mouse coordinate
 			}
 			function init() { //Mouse
-				var check = document.getElementById('randomColor').checked;
+				var check = document.getElementById('randomLineColor').checked;
 				if (check == false) { color = 'yellow'; }
 				if (check == true) { color = getRandomColor(); }
 				cLine.strokeStyle = color;
