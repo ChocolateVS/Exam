@@ -35,9 +35,8 @@
 		</div>
 		<center><div id="calculator">
 				<h1>TIME CALCULATOR</h2>
-				<h2>This Calculator will tell you how long it will take for a computer to solve this puzzle</h3>
-				<h2>The Equation for the calculation is equal to N Factorial</h2> 
-				<h2>This is because the number of operations is equal to the factorial of the number of points</h2>
+				<h2>This Calculator will tell you how long it will take for a computer to solve the puzzle for the <br>
+				shortest route, if it checks every possible route.</h2>
 				<div class="container"><form>
 					Number of points:       <input class="input" id="pointsN" type="number" min="0" max="100" value="15"><br>
 					Processing Speed (GHZ): <input class="input" id="speed" type="number" value="3" min="0" max="6"><br>
@@ -59,12 +58,14 @@
 		<div id="updates">
 			<h3>Upcoming in V2.0</h3>
 			<ul>
-				<li>Random Colored lines</li>
-				<li>Line Color Selector</li>
-				<li>Different Lines/Colors on the same diagram</li>
-				<li>More Time Calculator Intergration</li>
+				<li>Random Color for the lines or dots if user wants</li>
+				<li>Dragged Line Color Selector</li>
+				<li>Different Lines/Paths/Colors on the same diagram</li>
+				<li>More Time Calculator Intergration EG, Bot time vs Human time to solve</li>
+				<li>Automatic shortest route solver using different algorithms</li>
 			</ul>
 		</div>
+		<footer>Thanks for checking out my travelling salesmen puzzle - Created by Rowan Thorley</footer>
 		<script>
 			//Variables
 			var canvas = document.querySelector('#game1'); //Canvas for points
@@ -409,9 +410,10 @@
 				width: 100%;
 				clear: both;
 			}
-			#calculator, #updates {
+			footer, #calculator, #updates {
 				background-image: linear-gradient(to top, #00e5ff, #009dff);
 				border:1px solid white;
+				padding:5px;
 			}
 			.wrapper { 
 			    position: relative; 
