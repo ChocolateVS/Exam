@@ -15,7 +15,6 @@
 					<h2>Please select a number of points or click GO for a random number of points</h2>
 					<input class="input" id="dots" type="number" min="1" max="15" placeholder="Random">
 					<input class="button" id="start" value="  GO  " type="button" onClick="start()">
-					<h3>Right Click and select save image as to save a png of your dots</h3>
 			</div></center>
 		</header>	
 		<div class="wrapper" id="canvases">
@@ -65,7 +64,7 @@
 				<li>Automatic shortest route solver using different algorithms</li>
 			</ul>
 		</div>
-		<footer>Thanks for checking out my travelling salesmen puzzle - Created by Rowan Thorley</footer>
+		<footer id="footer">Thanks for checking out my travelling salesmen puzzle - Created by Rowan Thorley</footer>
 		<script>
 			//Variables
 			var canvas = document.querySelector('#game1'); //Canvas for points
@@ -95,7 +94,8 @@
 			document.getElementById("tools").style.display = "none";
 			function start() { //Start
 				document.getElementById("welcome").style.display = "none";//Make Elements visible and invisible
-				document.getElementById("updates").style.display = "none";//Make Elements visible and invisible
+				document.getElementById("updates").style.display = "none";
+				document.getElementById("footer").style.display = "none";
 				document.getElementById("tools").style.display = "block";
 				document.getElementById("calculator").style.display = "none";
 				document.getElementById("canvases").style.display = "block";
