@@ -27,7 +27,7 @@
 			<input class="button" id="undo" value="Undo" type="button" onClick="undo()">
 			<input class="button" id="reload" value="Reload" type="button" onClick="reload()">
 			<input class="button" id="restart" value="Restart" type="button" onClick="restart()">
-			<input class="button" id="timer" value="Start" type="button" onClick="timer()">
+			<input class="button" id="timer" value="Start-timer" type="button" onClick="timer()">
 			<input class="button" id="export" value="Export-PNG" type="button" onClick="exportAsPng()">
 			<span id="clock"></span><br>
 			<p>Number of Points: </p><p id="numberofpoints"></p>
@@ -266,13 +266,13 @@
 			}
 			function timer() { //Timer
 				switch (document.getElementById('timer').value) { //Switches button between an start/stop switch for stopwatch (timer)
-					case 'Stop': 
+					case 'Stop-timer': 
 						window.clearInterval(tm); // Stops the timer and sets button value to start
-						document.getElementById('timer').value = 'Start'; 
+						document.getElementById('timer').value = 'Start-timer'; 
 						break;
-					case 'Start':
+					case 'Start-timer':
 						tm = window.setInterval('disp()', 1000); //Starts the timer and sets button value to stop
-						document.getElementById('timer').value = 'Stop';
+						document.getElementById('timer').value = 'Stop-timer';
 						break;
 				}
 			}
