@@ -6,7 +6,7 @@
 	<body>
 		<header>
 			<center><div id="welcome">
-				<h1>Welcome to the Travelling Salesman problem</h1>
+				<h1>Welcome to the Travelling Salesman problem V1.2</h1>
 				<h2>Try to find the smallest possible route which passes through<br>
 					each point once and returns to the starting point
 					<br>
@@ -15,6 +15,7 @@
 					<h2>Please select a number of points or click GO for a random number of points</h2>
 					<input class="input" id="dots" type="number" min="1" max="15" placeholder="Random">
 					<input class="button" id="start" value="  GO  " type="button" onClick="start()">
+					<input type="checkbox" id="randomColor"><p> Random line color </p>
 			</div></center>
 		</header>	
 		<div class="wrapper" id="canvases">
@@ -25,7 +26,7 @@
 			<input class="button" id="save" value="Save" type="button" onClick="save()">
 			<input class="button" id="loadp" value="Load" type="button" onClick="load()">
 			<input class="button" id="undo" value="Undo" type="button" onClick="undo()">
-			<input class="button" id="reload" value="Reload" type="button" onClick="reload()">
+			<input class="button" id="reload" value="Clear Lines" type="button" onClick="reload()">
 			<input class="button" id="restart" value="Restart" type="button" onClick="restart()">
 			<input class="button" id="timer" value="Start-timer" type="button" onClick="timer()">
 			<input class="button" id="export" value="Export-PNG" type="button" onClick="exportAsPng()">
@@ -79,6 +80,7 @@
 					this.lineEndY = lineStartY;
 				}
 			}
+			var line_distance = 0;
 			var StartX = 0; //Start Location of starting dot
 			var StartY = 0;
 			var lines = []; //Lines Array
@@ -86,9 +88,9 @@
 			var distanceL = 0; //Current Line Distance
 			var total = 0; //Total Line Distance
 			var dragging = false, dragStartLocation; //Mouse Drag/Line Drawing
-			var h = 0; //Timer - Hours
-			var m = 0; //Timer - Minutes
-			var s = 0; //Timer - Seconds
+			h = 0; //Timer - Hours
+			m = 0; //Timer - Minutes
+			s = 0; //Timer - Seconds
 			var position = 0; //Mouse Position
 			document.getElementById("canvases").style.display = "none"; //Hide game assets on page load
 			document.getElementById("tools").style.display = "none";
@@ -126,6 +128,7 @@
 				c.textAlign = "left"; //Text position
 				c.fillText("Current Line Length:", 100, 80);
 				c.fillText(distanceL, 300, 80); //Draws new value to canvas
+				line_distance = distanceL;
 			}
 			function draw_total(total) { //Draws Total Line/Path Distance to the canvas
 				c.fillStyle = "Purple"; //Text Color
@@ -160,7 +163,10 @@
 				return {x: x, y: y} //Returns mouse coordinate
 			}
 			function init() { //Mouse
-				cLine.strokeStyle = 'yellow';
+				var check = document.getElementById('randomColor').checked;
+				if (check == false) { color = 'yellow'; }
+				if (check == true) { color = getRandomColor(); }
+				cLine.strokeStyle = color;
 				cLine.lineWidth = 6;
 				cLine.lineCap = 'round';
 				document.addEventListener("mousedown", dragStart, false); //Mouse event listeners
@@ -211,7 +217,7 @@
 				if (dragging == true) { //If dragging
 					position = getCanvasCoordintes(event); //Gets mouse cooridnates
 					lines[lines.length - 1].endX = position.x; //sets line end (where mouse is) to position.x and position.y
-					lines[lines.length - 1].endY = position.y; //
+					lines[lines.length - 1].endY = position.y; 
 					drawLines(); //Draws New Line to mouse
 				}
 			}
@@ -236,16 +242,18 @@
 				cLine.clearRect(0, 0, lineCanvas.width, lineCanvas.height); //Clears line canvas to remove all lines
 			}
 			function undo() { //Remove Previous lines
-				var distanceX = dragStartLocation.x - position.x; //Sets line distance to subtract from the total line distance
-				var distanceY = dragStartLocation.y - position.y;
-				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2)))
-				total = total - distanceL
+				lines.forEach((item, index, array) => {
+					console.log("Total: ", total) ;
+					var linedistanceX = item.lineStartX - item.lineEndY; //Sets line distance to subtract from the total line distance
+					var linedistanceY = item.lineStartY - item.lineEndY;
+					distanceL = Math.floor(Math.sqrt((linedistanceX ** 2) + (linedistanceY ** 2)));
+				});
+				console.log("DistanceL", line_distance);
 				lines.splice(-1, 1); //Removes previous lines
-				distanceX = dragStartLocation.x - position.x;
-				distanceY = dragStartLocation.y - position.y;
-				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2)))
-				total = total - distanceL;
 				lines.splice(-1, 1);
+				total = total - distanceL;
+				console.log("New Total", total);
+				draw_total(total);
 				drawLines(); //Re draws the lines without the removed line
 			}
 			function save() { //Save Poiot Locations
@@ -334,6 +342,14 @@
 				var w=window.open('about:blank','image from canvas'); //Opens new window with png
 				w.document.write("<img src='"+d+"' alt='from canvas'/>"); 
 			}	
+			function getRandomColor() { //Random Color Generator
+				var letters = '0123456789ABCDEF'; //Possible Characters in a hex
+				var color = '#'; //Hex value starts with hash
+				for (var i = 0; i < 6; i++) { //Gets six random values for hex and appends them to the color variable
+					color += letters[Math.floor(Math.random() * 16)]; //Generated Color
+				}
+				return color; //Function returns a random color
+			} 
 		</script>
 		<style>
 			html {
