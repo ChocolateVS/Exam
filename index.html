@@ -59,7 +59,6 @@
 		<div id="updates">
 			<h3>Upcoming in V2.0</h3>
 			<ul>
-				<li>Random Color for the lines or dots if user wants</li>
 				<li>Dragged Line Color Selector</li>
 				<li>Different Lines/Paths/Colors on the same diagram</li>
 				<li>More Time Calculator Intergration EG, Bot time vs Human time to solve</li>
@@ -175,20 +174,23 @@
 				document.addEventListener("mouseup", dragStop, false);
 			}
 			function drawPoints(rice) { //Push Values to Circle Function
+				var check = document.getElementById('randomDotColor').checked;
+				if (check == false) { color = 'black'; }
+				if (check == true) { color = getRandomColor(); }
 				if (circleArray === undefined || circleArray.length == 0) { //Checks wheter circle array is empty. If it is not empty, user has loaded template
 					for (var i = 0; i < rice; i++) { //Sets variables and pushes them to circle drawing function
 					var width = 20; //Circle Width
 					var height = 20; //Circle Height
 					var radius = 10; //Cirle Radius
-					var color = 'black'; //Circle Color
 					var x = Math.floor(Math.random() * (innerWidth - radius * 2) + radius); //Circle Random X Coordinate
 					var y = Math.floor(Math.random(Math.floor) * (innerHeight - radius * 2) + radius); //Circle Random Y Coordinate
-					circleArray.push(new Circle(x, y, width, height, radius, color)); //Sends circle values to draw function
+					circleArray.push(new Circle(x, y, width, height, radius, color)); //Creates the circleArray with each new value
 					}
 				}
-				circleArray.forEach((item, index, array) => { //If user has loaded a template this will run
+				circleArray.forEach((item, index, array) => { //Draws Created array from either loaded array or complete array
 					c.beginPath(); //Draws circles (items) based on loaded values
-					c.arc(item.x, item.y, item.radius, 0, Math.PI * 2, false); 
+					c.arc(item.x, item.y, item.radius, 0, Math.PI * 2, false);
+					c.strokeStyle = item.color;					
 					c.fillStyle = item.color;
 					c.fill();
 					c.closePath();
@@ -324,7 +326,6 @@
 					num--;
 					result *= num;
 				}
-				console.log(result);
 				return result;
 			}
 			function findUnitM(unit) { //Unit Select
