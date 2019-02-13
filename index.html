@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-	<title>Complexity and Tractability V1.0 Beta</title>
-</head>
-<body>
-	<header>
-		<center>
-			<div id="welcome">
+	<head>
+		<title>Complexity and Tractability V1.0 Beta</title>
+	</head>
+	<body>
+		<header>
+			<center><div id="welcome">
 				<h1>Welcome to the Travelling Salesman problem</h1>
 				<h2>Try to find the smallest possible route which passes through<br>
 					each point once and returns to the starting point
@@ -18,14 +16,12 @@
 					<input class="input" id="dots" type="number" min="1" max="15" placeholder="Random">
 					<input class="button" id="start" value="  GO  " type="button" onClick="start()">
 					<h3>Right Click and select save image as to save a png of your dots</h3>
-					<h3>Please do not resize the page or stuff wont be happy with you!</h3>
-					
 			</div></center>
 		</header>	
-    <div class="wrapper" id="canvases">
-		<canvas id="game1" width="100px" height="100px" style="border:1px solid white"></canvas>
-		<canvas id="lineCanvas" style="border:1px solid white"></canvas>
-    </div> 
+		<div class="wrapper" id="canvases">
+			<canvas id="game1" width="100px" height="100px" style="border:1px solid white"></canvas>
+			<canvas id="lineCanvas" style="border:1px solid white"></canvas>
+		</div> 
 		<div id="tools">
 			<input class="button" id="save" value="Save" type="button" onClick="save()">
 			<input class="button" id="loadp" value="Load" type="button" onClick="load()">
@@ -60,7 +56,7 @@
 				</form><br>
 				<p>A Computer with these specs would take: </p><p id="time">-</p> <p id="unit"> Seconds</p> <p>to solve this</p>
 		</center></div>
-		<div id="welcome">
+		<div id="updates">
 			<h3>Upcoming in V2.0</h3>
 			<ul>
 				<li>Random Colored lines</li>
@@ -71,15 +67,11 @@
 		</div>
 		<script>
 			//Variables
-			var canvas = document.querySelector('#game1'); //Canvas
-			var lineCanvas = document.querySelector("#lineCanvas");
+			var canvas = document.querySelector('#game1'); //Canvas for points
+			var lineCanvas = document.querySelector("#lineCanvas"); //Canvas for Lines
 			var c = canvas.getContext('2d'); //Variable for drwaing to canvas
-			var cLine = lineCanvas.getContext('2d');
-			var mouse = { //Mouse x,y coordinates
-				x: undefined,
-				y: undefined
-			}
-			class Line {
+			var cLine = lineCanvas.getContext('2d'); //Variable for drawing lines to canvas
+			class Line { //Variables for drawing lines
 				constructor(lineStartX, lineStartY) {
 					this.lineStartX = lineStartX;
 					this.lineStartY = lineStartY;
@@ -87,97 +79,74 @@
 					this.lineEndY = lineStartY;
 				}
 			}
-			var StartX = 0;
+			var StartX = 0; //Start Location of starting dot
 			var StartY = 0;
-			var lines = [];
-			var circleArray = [];
+			var lines = []; //Lines Array
+			var circleArray = []; //Points Array
 			var distanceL = 0; //Current Line Distance
-			var total = 0; //Total Distance
-			var dragging = false,
-				dragStartLocation, snapshot; //Mouse Draw/Line Drawing
+			var total = 0; //Total Line Distance
+			var dragging = false, dragStartLocation; //Mouse Drag/Line Drawing
 			var h = 0; //Timer - Hours
 			var m = 0; //Timer - Minutes
 			var s = 0; //Timer - Seconds
-			var position = 0;
-			//Elements
-			document.getElementById("canvases").style.display = "none";
+			var position = 0; //Mouse Position
+			document.getElementById("canvases").style.display = "none"; //Hide game assets on page load
 			document.getElementById("tools").style.display = "none";
-			//Event Listeners
-			window.addEventListener('mousemove', function(event) {
-				mouse.x = event.x;
-				mouse.y = event.y;
-			});
-			window.addEventListener('resize', function() {
-				canvas.width = window.innerWidth;
-				canvas.height = window.innerHeight;
-				lineCanvas.width = window.innerWidth;
-				lineCanvas.height = window.innerHeight;
-
-				console.log(innerWidth);
-				console.log(innerHeight);
-				//start();
-			});
-
 			function start() { //Start
 				document.getElementById("welcome").style.display = "none";//Make Elements visible and invisible
+				document.getElementById("updates").style.display = "none";//Make Elements visible and invisible
 				document.getElementById("tools").style.display = "block";
 				document.getElementById("calculator").style.display = "none";
 				document.getElementById("canvases").style.display = "block";
-				//Set Canvas to full width
-				canvas.width = window.innerWidth;
+				canvas.width = window.innerWidth;//Set Canvases to full width and height
 				canvas.height = window.innerHeight;
 				lineCanvas.width = window.innerWidth;
 				lineCanvas.height = window.innerHeight;
-				animate();
-				drawStart();
-				init();
+				animate(); //Begin 
+				drawStart(); //Draw Start Point
+				init(); //Initialze gameplay requirements
 			}
-
 			function animate() { //Animation
 				c.clearRect(0, 0, innerWidth, innerHeight);
 				var rice_value = document.getElementById("dots").value;
 				if (rice_value == '') {
 					var rice = Math.floor(Math.random() * 20) + 1;
-				} else {
+				} 
+				else {
 					var rice = document.getElementById("dots").value;
 				}
 				document.getElementById("numberofpoints").innerHTML = rice;
 				drawPoints(rice);
 			}
-
-			function draw_text() { //Drawing Current Distance
-				c.clearRect(100, 40, 250, 60);
-				c.font = "20px Comic Sans MS";
-				c.font = "20px Comic Sans MS";
-				c.fillStyle = "Purple";
-				c.textAlign = "left";
+			function draw_text() { //Draws Current Line Distance to canvas
+				c.clearRect(100, 40, 250, 60); //Clears old value
+				c.font = "20px Comic Sans MS"; //Text font
+				c.fillStyle = "Purple"; //Text Color
+				c.textAlign = "left"; //Text position
 				c.fillText("Current Line Length:", 100, 80);
-				c.fillText(distanceL, 300, 80);
+				c.fillText(distanceL, 300, 80); //Draws new value to canvas
 			}
-
-			function draw_total(total) { //Total Distance
-				c.fillStyle = "Purple";
-				c.textAlign = "left";
+			function draw_total(total) { //Draws Total Line/Path Distance to the canvas
+				c.fillStyle = "Purple"; //Text Color
+				c.textAlign = "left"; //Text Position
 				c.fillText("Total Distance:", 100, 60);
-				c.fillText(total, 250, 60);
+				c.fillText(total, 250, 60); //Draws to canvas
 			}
-
 			function Circle(x, y, width, height, radius, color) { //Draw Points
-				this.x = x;
+				this.x = x; //Sets recieved variables to non object specific variables (this)
 				this.y = y;
 				this.width = width;
 				this.height = height;
 				this.radius = radius;
 				this.color = color;
 			}
-
 			function drawStart() { //Draw Start Circle
-				var base_radius = 15;
-				if (StartY == 0 && StartX == 0) {
-					StartX = Math.random() * (innerWidth - base_radius * 2) + base_radius;
+				var base_radius = 15; //Circle Radius
+				if (StartY == 0 && StartX == 0) { //Check Whether User has loaded template
+					StartX = Math.random() * (innerWidth - base_radius * 2) + base_radius; //If not random location will be generated
 					StartY = Math.random() * (innerHeight - base_radius * 2) + base_radius;
 				}
-				c.beginPath();
+				c.beginPath(); //Draws Start circle location
 				c.arc(StartX, StartY, base_radius, 0, Math.PI * 2, false);
 				c.strokeStyle = "#39e600";
 				c.fillStyle = "#39e600";
@@ -185,144 +154,128 @@
 				c.closePath();
 				c.stroke();
 			}
-
 			function getCanvasCoordintes(event) { //Get Mouse Coordinates on canvas
-				var x = event.clientX - canvas.getBoundingClientRect().left,
-					y = event.clientY - canvas.getBoundingClientRect().top;
-				return {
-					x: x,
-					y: y
-				}
+				var x = event.clientX - canvas.getBoundingClientRect().left,y = event.clientY - canvas.getBoundingClientRect().top; //Gets Mouse coordinates on page
+				return {x: x, y: y} //Returns mouse coordinate
 			}
-
-			function init() { // Mouse Event Listeners
+			function init() { //Mouse
 				cLine.strokeStyle = 'yellow';
 				cLine.lineWidth = 6;
 				cLine.lineCap = 'round';
-				document.addEventListener("mousedown", dragStart, false);
+				document.addEventListener("mousedown", dragStart, false); //Mouse event listeners
 				document.addEventListener("mousemove", drag, false);
 				document.addEventListener("mouseup", dragStop, false);
 			}
-
 			function drawPoints(rice) { //Push Values to Circle Function
-	      if (circleArray === undefined || circleArray.length == 0) {
-          for (var i = 0; i < rice; i++) {
-            var width = 20;
-            var height = 20;
-            var radius = 10;
-            var color = 'black';
-            var x = Math.floor(Math.random() * (innerWidth - radius * 2) + radius);
-            var y = Math.floor(Math.random(Math.floor) * (innerHeight - radius * 2) + radius);
-            circleArray.push(new Circle(x, y, width, height, radius, color));
-          }
-        }
-		    circleArray.forEach((item, index, array) => {
-          c.beginPath();
-					c.arc(item.x, item.y, item.radius, 0, Math.PI * 2, false);
+				if (circleArray === undefined || circleArray.length == 0) { //Checks wheter circle array is empty. If it is not empty, user has loaded template
+					for (var i = 0; i < rice; i++) { //Sets variables and pushes them to circle drawing function
+					var width = 20; //Circle Width
+					var height = 20; //Circle Height
+					var radius = 10; //Cirle Radius
+					var color = 'black'; //Circle Color
+					var x = Math.floor(Math.random() * (innerWidth - radius * 2) + radius); //Circle Random X Coordinate
+					var y = Math.floor(Math.random(Math.floor) * (innerHeight - radius * 2) + radius); //Circle Random Y Coordinate
+					circleArray.push(new Circle(x, y, width, height, radius, color)); //Sends circle values to draw function
+					}
+				}
+				circleArray.forEach((item, index, array) => { //If user has loaded a template this will run
+					c.beginPath(); //Draws circles (items) based on loaded values
+					c.arc(item.x, item.y, item.radius, 0, Math.PI * 2, false); 
 					c.fillStyle = item.color;
 					c.fill();
 					c.closePath();
 					c.stroke();
-        });
-        
+				});
 			}
-
 			function drawLines() { //Line Drawing
-				cLine.clearRect(0, 0, lineCanvas.width, lineCanvas.height);
-				lines.forEach((item, index, array) => {
+				cLine.clearRect(0, 0, lineCanvas.width, lineCanvas.height); //Clears Line Canvas
+				lines.forEach((item, index, array) => { //Draws all items in line array
 					cLine.beginPath();
 					cLine.moveTo(item.lineStartX, item.lineStartY);
 					cLine.lineTo(item.endX, item.endY);
 					cLine.stroke();
 					cLine.closePath();
 				});
-				var distanceX = dragStartLocation.x - position.x;
-				var distanceY = dragStartLocation.y - position.y;
-				console.log("Distance X: ",distanceX, "Distance Y", distanceY )
-				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2)));
-				console.log(distanceL);
-				draw_text();
+				var distanceX = dragStartLocation.x - position.x; //Mouse X Start Coordinate - X End Coordinate after dragging
+				var distanceY = dragStartLocation.y - position.y; //Mouse Y Start Coordinate - Y End Coordinate after dragging
+				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2))); //Calculates distance between drag start and end points, using pythagorus
+				draw_text();//Draws Current line length as generated
 			}
-
 			function dragStart(event) { //When Mouse Click
-				dragging = true;
-				dragStartLocation = getCanvasCoordintes(event);
-				lines.push(new Line(getCanvasCoordintes(event).x, getCanvasCoordintes(event).y));
+				dragging = true; //Mouse Dragging Starts
+				dragStartLocation = getCanvasCoordintes(event); //Gets mouse dragging start coordinate
+				lines.push(new Line(getCanvasCoordintes(event).x, getCanvasCoordintes(event).y)); //Adds a new line starting at mouse coordinates
 			}
-
 			function drag(event) { //When Mouse Drag
-				if (dragging == true) {
-					position = getCanvasCoordintes(event);
-					lines[lines.length - 1].endX = position.x;
-					lines[lines.length - 1].endY = position.y;
-					drawLines();
+				if (dragging == true) { //If dragging
+					position = getCanvasCoordintes(event); //Gets mouse cooridnates
+					lines[lines.length - 1].endX = position.x; //sets line end (where mouse is) to position.x and position.y
+					lines[lines.length - 1].endY = position.y; //
+					drawLines(); //Draws New Line to mouse
 				}
 			}
 			function dragStop(event) { //When Mouse Release
-				dragging = false;
-				position = getCanvasCoordintes(event);
-				drawLines(position);
-				total = distanceL + total;
-				draw_total(total);
+				dragging = false; //Stops Dragging
+				position = getCanvasCoordintes(event); //Gets mouse coordinates
+				drawLines(position); //Draws line to end position
+				total = distanceL + total; //Adds new line distance to the total line distance
+				draw_total(total); //Draws new total
 			}
-			function restart() { //Refresh Canvas
-	      circleArray = [];
-				lines = [];
-        StartX = 0;
-        StartY = 0;
-				start();
-				total = 0;
+			function restart() { //Restart, New lines and points, RANDOM
+			    circleArray = []; //Clears circles
+				lines = []; //Clears lines
+				StartX = 0; //Resets staring point position
+				StartY = 0;
+				total = 0; //Resets path distance
+				start(); //Runs start function to restart the script
 			}
-
-			function reload() { //Remove all the lines
-				lines = [];
-				total = 0;
-		    cLine.clearRect(0, 0, lineCanvas.width, lineCanvas.height);
+			function reload() { //Remove all the lines but keeps points
+				lines = []; //Clears line array
+				total = 0; //Resets total line distance
+				cLine.clearRect(0, 0, lineCanvas.width, lineCanvas.height); //Clears line canvas to remove all lines
 			}
 			function undo() { //Remove Previous lines
-				var distanceX = dragStartLocation.x - position.x;
+				var distanceX = dragStartLocation.x - position.x; //Sets line distance to subtract from the total line distance
 				var distanceY = dragStartLocation.y - position.y;
 				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2)))
 				total = total - distanceL
-				lines.splice(-1, 1);
+				lines.splice(-1, 1); //Removes previous lines
 				distanceX = dragStartLocation.x - position.x;
 				distanceY = dragStartLocation.y - position.y;
 				distanceL = Math.floor(Math.sqrt((distanceX ** 2) + (distanceY ** 2)))
 				total = total - distanceL;
 				lines.splice(-1, 1);
-				drawLines();
+				drawLines(); //Re draws the lines without the removed line
 			}
-			function save() { //Save Canvas/Dot Locations
-				let jsoncode = {
+			function save() { //Save Poiot Locations
+				let jsoncode = { //Sets Coordinates for point locaitions as a string that can be copied
 					"STARTX": StartX, "STARTY": StartY, "CIRCUS": circleArray
 				}
 				jsoncode = JSON.stringify(jsoncode);
-				let whocares = prompt("Please copy this code: ", jsoncode);
+				let copy = prompt("Please copy this code (CTRL+C): ", jsoncode); //Prompt user to copy this code
 			}
-			function load() { //Load Preivous Canvas
-				
-				let jsoncode = prompt("Please paste in your code: ");
-				jsoncode = JSON.parse(jsoncode);
-				StartX = jsoncode["STARTX"];
+			function load() { //Load save point locations
+				let jsoncode = prompt("Please paste in your code: "); //Prompts user to paste a saved code
+				jsoncode = JSON.parse(jsoncode); //Changes the pasted string back into javascript values
+				StartX = jsoncode["STARTX"]; //Sets Java script values to values from the string
 				StartY = jsoncode["STARTY"];
 				circleArray = jsoncode["CIRCUS"];
-				lines = [];
-				start();
+				lines = []; //Clears line array
+				start(); //Restarts page
 			}
 			function timer() { //Timer
-				switch (document.getElementById('timer').value) {
-					case 'Stop':
-						window.clearInterval(tm); // stop the timer 
-						document.getElementById('timer').value = 'Start';
+				switch (document.getElementById('timer').value) { //Switches button between an start/stop switch for stopwatch (timer)
+					case 'Stop': 
+						window.clearInterval(tm); // Stops the timer and sets button value to start
+						document.getElementById('timer').value = 'Start'; 
 						break;
 					case 'Start':
-						tm = window.setInterval('disp()', 1000);
+						tm = window.setInterval('disp()', 1000); //Starts the timer and sets button value to stop
 						document.getElementById('timer').value = 'Stop';
 						break;
 				}
 			}
-			function disp() { //Timer
-				// Format the output by adding 0 if it is single digit //
+			function disp() { //Timer, Formats the output by adding 0 if it is single digit //
 				if (s < 10) {var s1 = '0' + s;} 
 				else {var s1 = s;}
 				if (m < 10) {var m1 = '0' + m;} 
@@ -340,25 +293,21 @@
 					}
 				}
 			}
-
 			function solveTime() { //How long will it take a robot
-				var num = document.getElementById("pointsN").value;
-				var speed = document.getElementById("speed").value;
-				var processors = document.getElementById("processors").value;
-				var unit = document.getElementById("units").value;
-				var result = factorialize(num);
-				var unitM = findUnitM(unit);
-				var process = (speed * 1000000000) / 10;
-				var pps = processors * process;
-				var time = Math.floor(((result / process) / unitM));
-				console.log("UnitM", unitM)
-				console.log("A Computer Would Take ", time, unit, " To Solve This");
-				document.getElementById("time").innerHTML = time;
+				var num = document.getElementById("pointsN").value; //Gets the number of points the user has set 
+				var speed = document.getElementById("speed").value; //Gets the processor speed the user has set
+				var processors = document.getElementById("processors").value; //Gets the number of processors the user ahs set
+				var unit = document.getElementById("units").value; //Gets the Unit the user has set
+				var result = factorialize(num); //Factorializes the points value to find the number of operations
+				var unitM = findUnitM(unit); //Sets the value to divide by based on the unit the user has selected
+				var process = (speed * 1000000000) / 10; //How long it will take a computer to calculate a single distance
+				var pps = processors * process; //Calculates processes per second 
+				var time = Math.floor(((result / process) / unitM)); //Calculates the time it will take a computer to solve
+				document.getElementById("time").innerHTML = time; //Sets HTML paragraphs to the calculated variables
 				document.getElementById("unit").innerHTML = unit;
 			}
-
-			function factorialize(num) { //Factorial for Calculator
-				var result = num;
+			function factorialize(num) { //Factorializer for the time Calculator
+				var result = num;		 //Gets the number of points and multiplies it by itself -1 (Factorial)
 				if (num === 0 || num === 1)
 					return 1;
 				while (num > 1) {
@@ -368,7 +317,6 @@
 				console.log(result);
 				return result;
 			}
-
 			function findUnitM(unit) { //Unit Select
 				if (unit == 'seconds') {return (1);}
 				if (unit == 'minutes') {return (60);}
@@ -379,107 +327,104 @@
 				if (unit == 'centuries') {return (3110400000);} 
 				else {return (1)}
 			}
-			
-			function exportAsPng() {
-				var c=document.getElementById("game1");
-				var d=c.toDataURL("image/png");
-				var w=window.open('about:blank','image from canvas');
-				w.document.write("<img src='"+d+"' alt='from canvas'/>");
+			function exportAsPng() { //Export
+				var c=document.getElementById("game1"); //Sets canvas as a variple
+				var d=c.toDataURL("image/png"); //Turns the variable into a png
+				var w=window.open('about:blank','image from canvas'); //Opens new window with png
+				w.document.write("<img src='"+d+"' alt='from canvas'/>"); 
 			}	
 		</script>
 		<style>
-		html {
-			height:100%;
-		}
-		body {
-			background-color:black;
-			font-family:Arial;
-			background-image: linear-gradient(to top, #00e5ff, #009dff);
-			background-repeat:no-repeat;
-			background-position:center;
-			background-size:cover;
-			color:white;
-			margin:0;
-			padding-botton:100px;
-		}
-		p {
-			font-size:20px;
-			display:inline;
-		}
-		ul {
-			color:white;
-			text-align:left;
-		}
-		#nextSteps {
-			text-align:left;
-		}
-    
-		canvas {
-		  position: absolute;
-      top: 0; 
-      left: 0;
-		}
-    
-		.button {
-			color:white;
-			width:100px;
-			height:34px;
-			font: 12px Helvetica, sans-serif;
-			background-image: linear-gradient(to top, #000404, #8a98a0);
-			border:1px solid black;
-		}
+			html {
+				height:100%;
+			}
+			body {
+				background-color:black;
+				font-family:Arial;
+				background-image: linear-gradient(to top, #00e5ff, #009dff);
+				background-repeat:no-repeat;
+				background-position:center;
+				background-size:cover;
+				color:white;
+				margin:0;
+				padding-botton:100px;
+			}
+			p {
+				font-size:20px;
+				display:inline;
+			}
+			ul {
+				color:white;
+				text-align:left;
+			}
+			#nextSteps {
+				text-align:left;
+			}
 		
-		.button:hover {
-			background-image: linear-gradient(to top, #8a98a0, #000404);
-			transform:scale(1.05);
-			transition-duration: 2s;
-		}
-		.input {
-			width:150px;
-			height:30px;
-			background-image: linear-gradient(to top, #000404, #8a98a0);
-			border:1px solid black;
-			color:white;
-			margin-bottom:10px;
-		}
+			canvas {
+				position: absolute;
+				top: 0; 
+				left: 0;
+			}
 		
-		#units {
-			color:white;
-			background-image: linear-gradient(to top, #000404, #8a98a0);
-			border:1px solid black;
-			width:auto;
-			height:34px;
-		}
-		.option {
-			color:black;
-		}
-		form {
-			text-align:center;
-		}
-		.container {
-		    width: 150px;
-		    clear: both;
-		}
-		.container input {
-			display:inline;
-		    width: 100%;
-		    clear: both;
-		}
-		
-		#calculator {
-			background-image: linear-gradient(to top, #00e5ff, #009dff);
-			border:1px solid white;
-		}
-	  .wrapper { 
-      position: relative; 
-      height:100%;
-      width:100%;
-    }
-    #tools {
-      position:absolute;
-      bottom:0;
-      left:0;
-    }
+			.button {
+				color:white;
+				width:100px;
+				height:34px;
+				font: 12px Helvetica, sans-serif;
+				background-image: linear-gradient(to top, #000404, #8a98a0);
+				border:1px solid black;
+			}	
+			.button:hover {
+				background-image: linear-gradient(to top, #8a98a0, #000404);
+				transform:scale(1.05);
+				transition-duration: 2s;
+			}
+			.input {
+				width:150px;
+				height:30px;
+				background-image: linear-gradient(to top, #000404, #8a98a0);
+				border:1px solid black;
+				color:white;
+				margin-bottom:10px;
+			}
+			
+			#units {
+				color:white;
+				background-image: linear-gradient(to top, #000404, #8a98a0);
+				border:1px solid black;
+				width:auto;
+				height:34px;
+			}
+			.option {
+				color:black;
+			}
+			form {
+				text-align:center;
+			}
+			.container {
+				width: 150px;
+				clear: both;
+			}
+			.container input {
+				display:inline;
+				width: 100%;
+				clear: both;
+			}
+			#calculator {
+				background-image: linear-gradient(to top, #00e5ff, #009dff);
+				border:1px solid white;
+			}
+			.wrapper { 
+			    position: relative; 
+			    height:100%;
+			    width:100%;
+			}
+			#tools {
+			    position:absolute;
+			    bottom:0;
+			    left:0;
+			}
 		</style>
 	</body>
 </html>
