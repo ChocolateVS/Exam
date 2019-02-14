@@ -14,25 +14,33 @@
 					Start at the green point, click and drag to create lines between each point</h2>
 					<h2>Please select a number of points or click GO for a random number of points</h2>
 					<input class="input" id="dots" type="number" min="1" max="15" placeholder="Random">
-					<input class="button" id="start" value="  GO  " type="button" onClick="start()"><br>
+					<input class="button" id="start" value="  GO  " type="button" onClick="start()"><br> 
 					<input type="checkbox" id="randomLineColor"><p> Random Line color </p><br>
-					<input type="checkbox" id="randomDotColor"><p> Random Dot color </p>
+					<input type="checkbox" id="randomDotColor" style="color: black, border:0;"><p> Random Dot color </p>
 			</div></center>
 		</header>	
 		<div class="wrapper" id="canvases">
 			<canvas id="game1" width="100px" height="100px" style="border:1px solid white"></canvas>
 			<canvas id="lineCanvas" style="border:1px solid white"></canvas>
-		</div> 
+		</div> <br>
 		<div id="tools">
 			<input class="button" id="save" value="Save" type="button" onClick="save()">
 			<input class="button" id="loadp" value="Load" type="button" onClick="load()">
 			<input class="button" id="undo" value="Undo" type="button" onClick="undo()">
 			<input class="button" id="reload" value="Clear Lines" type="button" onClick="reload()">
 			<input class="button" id="restart" value="Restart" type="button" onClick="restart()">
-			<input class="button" id="timer" value="Start-timer" type="button" onClick="timer()">
 			<input class="button" id="export" value="Export-PNG" type="button" onClick="exportAsPng()">
+			<input class="button" id="timer" value="Start-timer" type="button" onClick="timer()">
 			<span id="clock"></span><br>
 			<p>Number of Points: </p><p id="numberofpoints"></p>
+			<div id="colours">
+				<select id="colourSelect" name="colourSelect">
+					<option value="" selected="" class="option">Select a line color</option>
+					<option value='red' class="option">Path 1 - Red</option>
+					<option value='yellow' class="option">Path 2 - Yellow</option>
+				</select>
+				<input class="button" type="button" onclick="colourSelect()" value="Submit">
+			</div>
 		</div>
 		<center><div id="calculator">
 				<h1>TIME CALCULATOR</h2>
@@ -57,11 +65,14 @@
 				<p>A Computer with these specs would take: </p><p id="time">-</p> <p id="unit"> Seconds</p> <p>to solve this</p>
 		</center></div>
 		<div id="updates">
-			<h3>Upcoming in V2.0</h3>
+			<h3>Upcoming in V2.0 (Friday 15th Feb)</h3>
 			<ul>
 				<li>Dragged Line Color Selector</li>
 				<li>Different Lines/Paths/Colors on the same diagram</li>
 				<li>More Time Calculator Intergration EG, Bot time vs Human time to solve</li>
+			</ul>
+			<h3>Upcoming in V3.0 (Monday 18th Feb)</h3>
+			<ul>
 				<li>Automatic shortest route solver using different algorithms</li>
 			</ul>
 		</div>
@@ -102,9 +113,9 @@
 				document.getElementById("calculator").style.display = "none";
 				document.getElementById("canvases").style.display = "block";
 				canvas.width = window.innerWidth;//Set Canvases to full width and height
-				canvas.height = window.innerHeight;
+				canvas.height = window.innerHeight - 100;
 				lineCanvas.width = window.innerWidth;
-				lineCanvas.height = window.innerHeight;
+				lineCanvas.height = window.innerHeight - 100;
 				animate(); //Begin 
 				drawStart(); //Draw Start Point
 				init(); //Initialze gameplay requirements
@@ -352,6 +363,12 @@
 				}
 				return color; //Function returns a random color
 			} 
+			function colourSelect () {
+				colour = document.getElementById("colourSelect").value;
+				lineColor = "black";
+				if (colour == 'yellow') { lineColour = 'yellow'; }
+				if (colour == 'purple') { lineColour = 'purple'; }
+			}
 		</script>
 		<style>
 			html {
